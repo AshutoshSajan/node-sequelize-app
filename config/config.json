@@ -1,0 +1,23 @@
+{
+	"development": {
+		"username": "ashu",
+		"password": "sajan1213",
+		"database": "social_network",
+		"host": "127.0.0.1",
+		"dialect": "postgres"
+	},
+	"test": {
+		"username": "ashu",
+		"password": "sajan1213",
+		"database": "social_network",
+		"host": "127.0.0.1",
+		"dialect": "postgres"
+	},
+	"production": {
+		"username": "ashu",
+		"password": "sajan1213",
+		"database": "social_network",
+		"host": "127.0.0.1",
+		"dialect": "postgres"
+	}
+}
