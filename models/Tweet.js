@@ -1,5 +1,6 @@
 const Sequelize = require("sequelize");
 const db = require("../config/database");
+const User = require("./User");
 
 const Tweet = db.define(
 	"Tweet",
@@ -25,6 +26,5 @@ const Tweet = db.define(
 	{}
 );
 
-Tweet.belongsTo("User");
-
-module.exports = db;
+// Tweet.belongsTo(User);
+module.exports = Tweet;

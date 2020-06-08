@@ -1,5 +1,9 @@
 const Sequelize = require("sequelize");
 const db = require("../config/database");
+const Tweet = require("./Tweet");
+
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
 
 const User = db.define(
 	"User",
@@ -11,7 +15,7 @@ const User = db.define(
 			autoIncriment: false,
 			defaultValue: Sequelize.UUIDV4,
 		},
-		first_name: {
+		firstName: {
 			type: Sequelize.STRING,
 			allowNull: false,
 			validate: {
@@ -20,7 +24,7 @@ const User = db.define(
 					msg: "name is required",
 				},
 				len: {
-					args: [4, 30],
+					args: [3, 30],
 					msg: "name must be between 4 and 30 letters",
 				},
 				isAlpha: {
@@ -29,21 +33,10 @@ const User = db.define(
 				},
 			},
 		},
-		last_name: {
+		lastName: {
 			type: Sequelize.STRING,
-			allowNull: true,
-			validate: {
-				len: {
-					args: [4, 30],
-					msg: "last_name must be between 4 and 30 letters",
-				},
-				isAlpha: {
-					args: true,
-					msg: "name must only contain letters",
-				},
-			},
 		},
-		username: {
+		userName: {
 			type: Sequelize.STRING(30),
 			unique: true,
 			allowNull: false,
@@ -53,7 +46,7 @@ const User = db.define(
 					msg: "username is required",
 				},
 				len: {
-					args: [4, 30],
+					args: [3, 30],
 					msg: "name must be between 4 and 30 letters",
 				},
 			},
@@ -71,6 +64,23 @@ const User = db.define(
 					msg: "should be a prper email address",
 				},
 			},
+		},
+		password: {
+			type: Sequelize.STRING,
+			validate: {
+				notEmpty: {
+					args: true,
+					msg: "password is required",
+				},
+				min: {
+					args: 8,
+					msg: "password must be atleast 8 charecters long",
+				},
+			},
+		},
+		isAdmin: {
+			type: Sequelize.BOOLEAN,
+			defaultValue: false,
 		},
 		bio: {
 			type: Sequelize.STRING(300),
@@ -91,9 +101,33 @@ const User = db.define(
 			},
 		},
 	},
-	{}
+	{
+		hooks: {
+			beforeCreate: (user) => {
+				bcrypt.genSalt(saltRounds, function (err, salt) {
+					if (err) return console.error("bcrypt salt genarate error");
+					bcrypt.hash(user.password, salt, function (err, hash) {
+						if (err) return console.error("bcrypt password hashing error");
+						user.password = hash;
+						console.log(user.password.length);
+
+						user.save();
+					});
+				});
+			},
+		},
+
+		instanceMethods: {
+			validPassword(password) {
+				bcrypt.compare(password, this.password, function (err, result) {
+					console.log(result, "...............");
+					return result;
+				});
+			},
+		},
+	}
 );
 
-User.hasMeny("tweets");
+User.hasMany(Tweet);
 
 module.exports = User;

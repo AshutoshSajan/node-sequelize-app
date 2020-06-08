@@ -1,5 +1,3 @@
-// const Sequelize = require("sequelize");
-// const db = require("../config/database");
 const User = require("../models/User");
 const Tweet = require("../models/Tweet");
 
