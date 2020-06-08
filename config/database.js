@@ -1,6 +1,6 @@
 const Sequelize = require("sequelize");
 
-const sequelize = new Sequelize("social_network", "ashu", "sajan1213", {
+const db = new Sequelize("social_network", "ashu", "sajan1213", {
 	host: "127.0.0.1",
 	dialect: "postgres",
 	pool: {
@@ -11,4 +11,4 @@ const sequelize = new Sequelize("social_network", "ashu", "sajan1213", {
 	},
 });
 
-module.exports = sequelize;
+module.exports = db;

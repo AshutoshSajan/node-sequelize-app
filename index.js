@@ -2,81 +2,40 @@ const express = require("express");
 const exphbs = require("express-handlebars");
 const bodyParser = require("body-parser");
 const path = require("path");
-const sequelize = require("./config/database");
+const db = require("./config/database");
 const User = require("./models/User");
 const Tweet = require("./models/Tweet");
 
+const usersRouter = require("./routes/user");
+const tweetsRouter = require("./routes/tweet");
+
+// const Sequelize = require("sequelize");
+// console.log(Sequelize.UUIDV4, "Sequelize...");
+// console.log(sequelize.sync, "sequelize...");
+
 const app = express();
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded());
 
-sequelize
-	.authenticate()
-	.then(() => console.log("Database is connected..."))
-	.catch((err) => console.log("Error: " + err));
+// working when adding schema manually
+db.sync({
+	logging: console.log,
+	force: true,
+})
+	.then(() => console.log("Connection to database is established successfully"))
+	.catch((err) => console.log("Unable to connect to the database" + err));
 
-app.get("/users", (req, res) => {
-	User.findAll().then((users, err) => {
-		if (err) {
-			return res
-				.status(500)
-				.json({ success: false, message: "Server dide error" });
-		} else {
-			return res.status(200).json({ success: true, users });
-		}
-	});
-});
+// OR
+// working when adding schema using sequalize-cli
 
-app.post("/users", (req, res) => {
-	const { user } = req.body;
-	User.create(user).then((user, err) => {
-		if (err) {
-			return res
-				.status(500)
-				.json({ success: false, message: "Server dide error" });
-		} else {
-			return res.status(200).json({ success: true, user });
-		}
-	});
-});
+// db
+// 	.authenticate()
+// 	.then(() => console.log("Database is connected..."))
+// 	.catch((err) => console.log("Database connection error: " + err));
 
-app.put("/users", (req, res) => {
-	const { id } = req.params;
-	const { user } = req.body;
-
-	User.update(user, {
-		where: {
-			id,
-		},
-	}).then((user, err) => {
-		if (err) {
-			return res
-				.status(500)
-				.json({ success: false, message: "Server dide error" });
-		} else {
-			return res
-				.status(200)
-				.json({ success: true, user, message: "user updated" });
-		}
-	});
-});
-
-app.delete("/users", (req, res) => {
-	const { id } = req.params;
-	User.destroy({
-		where: {
-			id,
-		},
-	}).then((user, err) => {
-		if (err) {
-			return res
-				.status(500)
-				.json({ success: false, message: "Server dide error" });
-		} else {
-			return res
-				.status(200)
-				.json({ success: true, user, message: "user deleted" });
-		}
-	});
-});
+app.use("/api/v1/users", usersRouter);
+app.use("/api/v1/tweets", tweetsRouter);
+// app.use("/*", (req, res) => res.send("welcome to node sequalize app"));
 
 const PORT = process.env.port || 3000;
 

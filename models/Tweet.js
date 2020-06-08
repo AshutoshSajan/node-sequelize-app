@@ -1,29 +1,30 @@
-"use strict";
-module.exports = (sequelize, DataTypes) => {
-	const Tweet = sequelize.define(
-		"Tweet",
-		{
-			id: {
-				type: DataTypes.UUIDV4,
-				allowNull: false,
-				autoIncrement: false,
-				primarykey: true,
-			},
-			content: {
-				type: DataTypes.STRING(300),
-				allowNull: false,
-				validate: {
-					notEmpty: {
-						args: true,
-						msg: "tweet body can't be empty",
-					},
+const Sequelize = require("sequelize");
+const db = require("../config/database");
+
+const Tweet = db.define(
+	"Tweet",
+	{
+		id: {
+			type: Sequelize.UUID,
+			allowNull: false,
+			autoIncrement: false,
+			primaryKey: true,
+			defaultValue: Sequelize.UUIDV4,
+		},
+		content: {
+			type: Sequelize.STRING(300),
+			allowNull: false,
+			validate: {
+				notEmpty: {
+					args: true,
+					msg: "tweet is required",
 				},
 			},
 		},
-		{}
-	);
-	Tweet.associate = function (models) {
-		// associations can be defined here
-	};
-	return Tweet;
-};
+	},
+	{}
+);
+
+Tweet.belongsTo("User");
+
+module.exports = db;
